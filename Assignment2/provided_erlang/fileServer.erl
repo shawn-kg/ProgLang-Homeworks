@@ -14,7 +14,7 @@ fileServerMessageHandler() ->
             io:format("received message~n",[]),
             storeFile(PartName, FileContents),
             fileServerMessageHandler();
-        {get, {Filename,DirUAL}} -> 
+        % {get, {Filename,DirUAL}} -> 
             
         quit ->
             ok

@@ -10,8 +10,11 @@ dirService(FileServers,Files) ->
             dirService(lists:sort(fun({FileNode1, _}, {FileNode2, _}) -> FileNode1 < FileNode2 end,FileServers),Files);
         {create, Filename, Filecontents} ->
             dirService(FileServers,splitAndSend(Filename, Filecontents, FileServers, FileServers, Files, 1,1));
-        {get, {Filename,ClientPID}} ->
-            getBlocks(Filename,ClientPID,FileServers, Files), 
+        printFiles ->
+            printFiles(Files),
+            dirService(FileServers,Files);
+        {get, Filename, ClientPID} ->
+            %getBlocks(Filename,ClientPID,FileServers, Files), 
             dirService(FileServers,Files);
         quit ->
             quit(FileServers),
@@ -28,6 +31,12 @@ printPIDS([]) ->
 printPIDS([{FileNode, FilePID} | Rest]) ->
     io:format("~w ~w~n", [FileNode,FilePID]),
     printPIDS(Rest).
+
+printFiles([]) ->
+    ok;
+printFiles([{Filename, {ActualName, FilePID}} | Rest]) ->
+    io:format("~w~n~w~n~w~n",[Filename,ActualName,FilePID]),
+    printFiles(Rest).
 
 quit ([]) ->
     ok;
@@ -74,8 +83,8 @@ splitAndSendLocalTest(Filename, Filecontents, FileServers, [Head | Rest ],Val, F
             util:saveFile("downloads/" ++ Filename ++ integer_to_list(Filepart) ++ ".txt",lists:sublist(Filecontents, Val, length(Filecontents) - (Val-1))),
             ok
     end.
-getBlocks(Filename, ClientPID, FileServers, Files) ->
-    
+%getBlocks(Filename, ClientPID, FileServers, Files) ->
+     
 
 
 

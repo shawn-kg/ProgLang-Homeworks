@@ -1,7 +1,7 @@
 -module(main).
 
 % main functions
--export([start_file_server/1, start_dir_service/0, get/2, create/2, quit/1, getInfo/2, getReceive/2]).
+-export([start_file_server/1, start_dir_service/0, get/2, create/2, quit/1, print/1, getInfo/2]).
 
 % can access own ual w/ node()
 % can access own PID w/ self()
@@ -42,12 +42,47 @@ quit(DirUAL) ->
 	{DirUAL, DirUAL} ! quit.
 	% CODE THIS
 
-getInfo(DirUAL,File) ->
-	{DirUAL, DirUAL} ! {get, {File,self()}},
-	getReceive(DirUAL,File).
+print(DirUAL) ->
+	{DirUAL, DirUAL} ! printFiles.
 
-getReceive(DirUAL,File) ->
-	pass.
+getInfo(DirUAL, File) ->
+	{DirUAL, DirUAL} ! {get, File, self()}.
+% inp() ->
+% 	[Head | Tail] = string:tokens(io:get_line(""),[$\s]),
+% 	case Head of 
+% 		"d" ->
+% 			%io:format("Directory creation~n",[]),
+% 			%[T] = Tail,
+% 			%T1 = lists:sublist(T,1,length(T)-1),
+% 			%io:format("~w~n",[T1]),
+% 			start_dir_service(),
+% 			inp();
+% 		"f" ->
+% 			io:format("Fileserver creation~n"),
+% 			[H1 | T1] = Tail,
+% 			%start_file_server(H1),
+% 			[T] = T1,
+% 			T2 = lists:sublist(T,1,length(T)-1),
+% 			io:format("~w~n~w~n",[H1,T2]),
+% 			inp();
+% 		"c" ->
+% 			io:format("Create command~n"),
+% 			[H1|T1] = Tail,
+% 			[T] = T1,
+% 			T2 = lists:sublist(T,2,length(T)-3),
+% 			%create(H1,T2),
+% 			io:format("~w~n~w~n",[H1,T2]),
+% 			inp();
+% 		"g" ->
+% 			io:format("Get command~n"),
+% 			[H1|T1] = Tail,
+% 			[T] = T1,
+% 			T2 = lists:sublist(T,2,length(T)-3),
+% 			io:format("~w~n~w~n",[H1,T2]),
+% 			%get(H1,T2),
+% 			inp()
+% 	end. 
+	
 	% receive
 
 	% end.
