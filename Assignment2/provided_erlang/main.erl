@@ -46,7 +46,14 @@ print(DirUAL) ->
 	{DirUAL, DirUAL} ! printFiles.
 
 getInfo(DirUAL, File) ->
-	{DirUAL, DirUAL} ! {get, File, self()}.
+	{DirUAL, DirUAL} ! {get, File, self()},
+	getReceive(File,[]).
+
+getReceive(File, Fileparts) ->
+	receive 
+		{filepart, FilePID, part_name} ->
+			
+	end.
 % inp() ->
 % 	[Head | Tail] = string:tokens(io:get_line(""),[$\s]),
 % 	case Head of 
