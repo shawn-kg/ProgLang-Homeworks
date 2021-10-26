@@ -28,6 +28,7 @@ start_file_server(DirUAL) ->
 % then requests file parts from the locations retrieved from Dir Service
 % then combines the file and saves to downloads folder
 get(DirUAL, File) ->
+	file:make_dir("downloads"),
 	spawn(main,getInfo,[DirUAL,File]).	
 	% CODE THIS
 
@@ -47,13 +48,48 @@ print(DirUAL) ->
 
 getInfo(DirUAL, File) ->
 	{DirUAL, DirUAL} ! {get, File, self()},
-	getReceive(File,[]).
+	getReceive(File,[], []).
 
-getReceive(File, Fileparts) ->
+getReceive(File, Fileparts, FileList) ->
 	receive 
-		{filepart, FilePID, part_name} ->
-			
+		{filepart, FilePID, PartName} ->
+			getReceive(File, addFilePart(Fileparts, PartName, FilePID), FileList);
+		donewithfileparts ->
+			askForParts(Fileparts),
+			getReceive(File, Fileparts, FileList);
+		{filecontents, _, PartName, FileContents} ->
+			NewFileList = addFileContent(FileList, FileContents, PartName),
+			checkLength(File, Fileparts,NewFileList)
 	end.
+
+checkLength(File, Fileparts, FileList) ->
+	if 
+		length(Fileparts)==length(FileList) ->
+			storeFileDriver(File, FileList);
+		length(Fileparts) /= length(FileList) ->
+			getReceive(File, Fileparts, FileList)
+	end.
+
+addFileContent(FileList, FileContents, PartName) ->
+	[{PartName, FileContents} | FileList].
+
+addFilePart(Fileparts, PartName, FilePID) ->
+	[{FilePID, PartName} | Fileparts].
+
+askForParts([]) ->
+	ok;
+askForParts([{FilePID, PartName}| Rest]) ->
+	FilePID ! {clientAsk, PartName, self()},
+	askForParts(Rest).
+
+storeFileDriver(File, FileList) ->
+	NewFileList = lists:sort(fun({PartName1, _ }, {PartName2, _}) -> PartName1 < PartName2 end, FileList),
+	storeFile(File,NewFileList).
+
+storeFile(File, [{_, FileContents} | Rest]) ->
+	util:saveFile("downloads/" ++ File, FileContents),
+	storeFile(File, Rest).
+
 % inp() ->
 % 	[Head | Tail] = string:tokens(io:get_line(""),[$\s]),
 % 	case Head of 
