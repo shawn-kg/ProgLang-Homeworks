@@ -42,6 +42,12 @@ create(DirUAL, File) ->
 quit(DirUAL) ->
 	{DirUAL, DirUAL} ! quit.
 	% CODE THIS
+printList([]) ->
+	ok;
+printList([{FilePID, Partname} | Rest]) ->
+	io:format("~w~w~n",[FilePID, Partname]),
+	printList(Rest).
+
 
 print(DirUAL) ->
 	{DirUAL, DirUAL} ! printFiles.
@@ -59,8 +65,9 @@ getReceive(File, Fileparts, FileList) ->
 		{filepart, FilePID, PartName} ->
 			getReceive(File, addFilePart(Fileparts, PartName, FilePID), FileList);
 		donewithfileparts ->
-			askForParts(Fileparts),
-			getReceive(File, Fileparts, FileList);
+			printList(Fileparts);
+			%askForParts(Fileparts),
+			% getReceive(File, Fileparts, FileList);
 		{filecontents, _, PartName, FileContents} ->
 			NewFileList = addFileContent(FileList, FileContents, PartName),
 			checkLength(File, Fileparts,NewFileList)

@@ -92,7 +92,7 @@ sendFilesData(RequestName, ClientPID, [{Filename, {ActualName, FilePID}} | Rest]
         RequestName == Filename ->
             ClientPID ! {filepart, FilePID, ActualName},
             sendFilesData(RequestName, ClientPID, Rest);
-        RequestName /= FileName ->
+        RequestName /= Filename ->
             sendFilesData(RequestName, ClientPID, Rest)
     end.
         % FileData = [{Filename, {ActualName, FilePID}}} || {Filename, {ActualName, FilePID}} <= Files, RequestName == Filename],
