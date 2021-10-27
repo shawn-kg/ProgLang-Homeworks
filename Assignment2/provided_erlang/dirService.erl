@@ -1,5 +1,5 @@
 -module(dirService).
--export([dirService/2,printPIDS/1,splitAndSendLocalTest/6]).
+-export([dirService/2,printPIDS/1]).
 
 dirService(FileServers,Files) ->
     receive
@@ -14,7 +14,7 @@ dirService(FileServers,Files) ->
             printFiles(Files),
             dirService(FileServers,Files);
         {get, Filename, ClientPID} ->
-            %getBlocks(Filename,ClientPID,FileServers, Files), 
+            sendFilesData(Filename,ClientPID, Files), 
             dirService(FileServers,Files);
         quit ->
             quit(FileServers),
@@ -70,20 +70,38 @@ checkServers([],FileServers) ->
 checkServers(RestofServers, _) ->
     RestofServers.
 
-splitAndSendLocalTest(Filename, Filecontents, FileServers, [Head | Rest ],Val, Filepart) ->
+% splitAndSendLocalTest(Filename, Filecontents, FileServers, [Head | Rest ],Val, Filepart) ->
+%     if 
+%         Val > length(Filecontents) ->
+%             ok;
+%         length(Filecontents) - (Val-1) >= 64 ->
+%             io:fwrite("~w~n",[Head]),
+%             util:saveFile("downloads/" ++ Filename ++ integer_to_list(Filepart) ++ ".txt",lists:sublist(Filecontents, Val, 64)),
+%             splitAndSendLocalTest(Filename, Filecontents, FileServers, checkServers(Rest, FileServers), Val+64, Filepart+1);
+%         length(Filecontents) - (Val-1) < 64 -> 
+%             io:fwrite("~w~n",[Head]),
+%             util:saveFile("downloads/" ++ Filename ++ integer_to_list(Filepart) ++ ".txt",lists:sublist(Filecontents, Val, length(Filecontents) - (Val-1))),
+%             ok
+%     end.
+
+
+sendFilesData(_,ClientPID,[]) ->
+    ClientPID ! donewithfileparts;
+sendFilesData(RequestName, ClientPID, [{Filename, {ActualName, FilePID}} | Rest]) ->
     if 
-        Val > length(Filecontents) ->
-            ok;
-        length(Filecontents) - (Val-1) >= 64 ->
-            io:fwrite("~w~n",[Head]),
-            util:saveFile("downloads/" ++ Filename ++ integer_to_list(Filepart) ++ ".txt",lists:sublist(Filecontents, Val, 64)),
-            splitAndSendLocalTest(Filename, Filecontents, FileServers, checkServers(Rest, FileServers), Val+64, Filepart+1);
-        length(Filecontents) - (Val-1) < 64 -> 
-            io:fwrite("~w~n",[Head]),
-            util:saveFile("downloads/" ++ Filename ++ integer_to_list(Filepart) ++ ".txt",lists:sublist(Filecontents, Val, length(Filecontents) - (Val-1))),
-            ok
+        RequestName == Filename ->
+            ClientPID ! {filepart, FilePID, ActualName},
+            sendFilesData(RequestName, ClientPID, Rest);
+        RequestName /= FileName ->
+            sendFilesData(RequestName, ClientPID, Rest)
     end.
-%getBlocks(Filename, ClientPID, FileServers, Files) ->
+        % FileData = [{Filename, {ActualName, FilePID}}} || {Filename, {ActualName, FilePID}} <= Files, RequestName == Filename],
+        % ClientPID ! FileData
+        % sendFilesData()
+
+
+
+
      
 
 
@@ -98,3 +116,5 @@ splitAndSendLocalTest(Filename, Filecontents, FileServers, [Head | Rest ],Val, F
 %         reset -> counter(1);
 %         stop -> true
 %     end.
+
+

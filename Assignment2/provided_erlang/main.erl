@@ -50,6 +50,10 @@ getInfo(DirUAL, File) ->
 	{DirUAL, DirUAL} ! {get, File, self()},
 	getReceive(File,[], []).
 
+%
+% 
+%
+
 getReceive(File, Fileparts, FileList) ->
 	receive 
 		{filepart, FilePID, PartName} ->
