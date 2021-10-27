@@ -42,3 +42,10 @@ storeFile(PartName, FileContents) ->
 
 % ClientPID ! {filecontents, PartName, FileContent}.
 
+sendBackData(PartName, ClientPID)->
+    Node = atom_to_list(node()),
+    util:saveFile("testcontent.txt", util:readFile("servers/" ++ Node ++ "/" ++ PartName)).
+    %ClientPID ! {filecontents, self(), PartName, util:readFile("servers/" ++ Node ++ "/" ++ PartName)}.
+
+
+
