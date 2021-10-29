@@ -15,6 +15,7 @@
 
 % starts a directory service
 start_dir_service() -> 
+	file:make_dir("servers"),
 	io:format("~w~n",[node()]),
 	register(node(),spawn(dirService,dirService,[[],[]])).
 	% CODE THIS
@@ -29,45 +30,45 @@ start_file_server(DirUAL) ->
 % then combines the file and saves to downloads folder
 get(DirUAL, File) ->
 	file:make_dir("downloads"),
-	spawn(main,getInfo,[DirUAL,File]).	
+	spawn(main,getInfo,[DirUAL,atom_to_list(File)]).	
 	% CODE THIS
 
 % gives Directory Service (DirUAL) the name/contents of File to create
 create(DirUAL, File) ->
-	Contents = util:readFile("input/" ++ File),
-	{DirUAL, DirUAL} ! {create, File, Contents}.
+	Contents = util:readFile("input/" ++ atom_to_list(File)),
+	{DirUAL, DirUAL} ! {create, atom_to_list(File), Contents}.
 	% CODE THIS
 
 % sends shutdown message to the Directory Service (DirUAL)
 quit(DirUAL) ->
-	{DirUAL, DirUAL} ! quit.
+	{DirUAL, DirUAL} ! quit,
+	init:stop().
 	% CODE THIS
 printList([]) ->
 	ok;
-printList([{FilePID, Partname} | Rest]) ->
-	io:format("~w~w~n",[FilePID, Partname]),
+printList([{Partname, Filecontents} | Rest]) ->
+	io:format("~w~n~w~n",[Partname, Filecontents]),
 	printList(Rest).
 
 
 print(DirUAL) ->
 	{DirUAL, DirUAL} ! printFiles.
 
+
+
+
 getInfo(DirUAL, File) ->
 	{DirUAL, DirUAL} ! {get, File, self()},
 	getReceive(File,[], []).
-
-%
-% 
-%
 
 getReceive(File, Fileparts, FileList) ->
 	receive 
 		{filepart, FilePID, PartName} ->
 			getReceive(File, addFilePart(Fileparts, PartName, FilePID), FileList);
 		donewithfileparts ->
-			printList(Fileparts);
-			%askForParts(Fileparts),
-			% getReceive(File, Fileparts, FileList);
+			printList(Fileparts),
+			askForParts(Fileparts),
+			getReceive(File, Fileparts, FileList);
 		{filecontents, _, PartName, FileContents} ->
 			NewFileList = addFileContent(FileList, FileContents, PartName),
 			checkLength(File, Fileparts,NewFileList)
@@ -95,50 +96,13 @@ askForParts([{FilePID, PartName}| Rest]) ->
 
 storeFileDriver(File, FileList) ->
 	NewFileList = lists:sort(fun({PartName1, _ }, {PartName2, _}) -> PartName1 < PartName2 end, FileList),
-	storeFile(File,NewFileList).
-
-storeFile(File, [{_, FileContents} | Rest]) ->
-	util:saveFile("downloads/" ++ File, FileContents),
-	storeFile(File, Rest).
-
-% inp() ->
-% 	[Head | Tail] = string:tokens(io:get_line(""),[$\s]),
-% 	case Head of 
-% 		"d" ->
-% 			%io:format("Directory creation~n",[]),
-% 			%[T] = Tail,
-% 			%T1 = lists:sublist(T,1,length(T)-1),
-% 			%io:format("~w~n",[T1]),
-% 			start_dir_service(),
-% 			inp();
-% 		"f" ->
-% 			io:format("Fileserver creation~n"),
-% 			[H1 | T1] = Tail,
-% 			%start_file_server(H1),
-% 			[T] = T1,
-% 			T2 = lists:sublist(T,1,length(T)-1),
-% 			io:format("~w~n~w~n",[H1,T2]),
-% 			inp();
-% 		"c" ->
-% 			io:format("Create command~n"),
-% 			[H1|T1] = Tail,
-% 			[T] = T1,
-% 			T2 = lists:sublist(T,2,length(T)-3),
-% 			%create(H1,T2),
-% 			io:format("~w~n~w~n",[H1,T2]),
-% 			inp();
-% 		"g" ->
-% 			io:format("Get command~n"),
-% 			[H1|T1] = Tail,
-% 			[T] = T1,
-% 			T2 = lists:sublist(T,2,length(T)-3),
-% 			io:format("~w~n~w~n",[H1,T2]),
-% 			%get(H1,T2),
-% 			inp()
-% 	end. 
+	printList(NewFileList),
 	
-	% receive
+	util:saveFile("downloads/" ++ File, storeFile(NewFileList, [])).
+storeFile([],FileToStore) ->
+	FileToStore;
+storeFile([{_, FileContents} | Rest] , FileToStore) ->
+	storeFile(Rest, FileToStore ++ FileContents).
 
-	% end.
 
 

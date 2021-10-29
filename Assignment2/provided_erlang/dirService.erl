@@ -18,7 +18,7 @@ dirService(FileServers,Files) ->
             dirService(FileServers,Files);
         quit ->
             quit(FileServers),
-            ok
+            init:stop()
     end.
 
 
@@ -70,21 +70,6 @@ checkServers([],FileServers) ->
 checkServers(RestofServers, _) ->
     RestofServers.
 
-% splitAndSendLocalTest(Filename, Filecontents, FileServers, [Head | Rest ],Val, Filepart) ->
-%     if 
-%         Val > length(Filecontents) ->
-%             ok;
-%         length(Filecontents) - (Val-1) >= 64 ->
-%             io:fwrite("~w~n",[Head]),
-%             util:saveFile("downloads/" ++ Filename ++ integer_to_list(Filepart) ++ ".txt",lists:sublist(Filecontents, Val, 64)),
-%             splitAndSendLocalTest(Filename, Filecontents, FileServers, checkServers(Rest, FileServers), Val+64, Filepart+1);
-%         length(Filecontents) - (Val-1) < 64 -> 
-%             io:fwrite("~w~n",[Head]),
-%             util:saveFile("downloads/" ++ Filename ++ integer_to_list(Filepart) ++ ".txt",lists:sublist(Filecontents, Val, length(Filecontents) - (Val-1))),
-%             ok
-%     end.
-
-
 sendFilesData(_,ClientPID,[]) ->
     ClientPID ! donewithfileparts;
 sendFilesData(RequestName, ClientPID, [{Filename, {ActualName, FilePID}} | Rest]) ->
@@ -95,26 +80,5 @@ sendFilesData(RequestName, ClientPID, [{Filename, {ActualName, FilePID}} | Rest]
         RequestName /= Filename ->
             sendFilesData(RequestName, ClientPID, Rest)
     end.
-        % FileData = [{Filename, {ActualName, FilePID}}} || {Filename, {ActualName, FilePID}} <= Files, RequestName == Filename],
-        % ClientPID ! FileData
-        % sendFilesData()
-
-
-
-
-     
-
-
-
-% counter(Val) ->
-%     receive
-%         increment -> 
-%             counter(Val+1);
-%         {From,get} ->
-%             From ! {self(), Val},
-%             counter(Val);
-%         reset -> counter(1);
-%         stop -> true
-%     end.
 
 
