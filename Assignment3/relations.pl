@@ -1,26 +1,42 @@
 siblings(Person, Sibling) :-
-	false.
+	parentOf(X,Person), parentOf(Y,Sibling), (X=Y; spouse(X,Y)), Person\=Sibling.
 
 firstCousins(Person, Cousin) :-
-	false.
+	parentOf(X,Person), parentOf(Y,Cousin), siblings(X,Y), Person\=Cousin.
 
 hasAncestor(Person, Ancestor) :-
-	false.
+	parentOf(Ancestor, Person).
+hasAncestor(Person, Ancestor) :-
+    parentOf(X, Person), hasAncestor(X, Ancestor).
 
 hasDescendant(Person, Descendant) :-
-	true.
+	hasAncestor(Descendant, Person).
 
 listAncestors(Person, Ancestors) :-
-	false.
+	findall(Ancestor, hasAncestor(Person,Ancestor), Ancestors).
+
 
 listDescendants(Person, Descendants) :-
-	false.
+	findall(Descendant, hasDescendant(Person,Descendant), Descendants).
 
 hasHeir(Person, Heir) :-
-	false.
+	monarch(Person), 
+	findall(Child, parentOf(Person, Child), Children), 
+	childOf(Heir, Person),
+	birthYear(Heir, HeirYear),
+	oldest(Person, Children, Heir, HeirYear).
+
+oldest(_, [], _, _).
+oldest(Parent, [Sibling|Rest], Child, Year):-
+	birthYear(Sibling, SibYear), SibYear >= Year, oldest(Parent, Rest, Child, Year).
+
 
 hasSuccessor(Person, Successor) :-
-	false.
+	childOf(Successor, Person),
+	monarch(Person),
+	monarch(Successor).
 
 heirIsSuccessor(Person) :-
-	false.
+	hasHeir(Person, Heir),
+	hasSuccessor(Person, Successor),
+	Heir = Successor. 
