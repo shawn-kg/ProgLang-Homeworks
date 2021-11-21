@@ -1,0 +1,1 @@
+Processor type a has 16 cores, uses 4 square centimeters, and costs 1000 dollars.
