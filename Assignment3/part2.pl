@@ -1,5 +1,6 @@
 :- use_module(library(clpfd)).
 :- use_module(library(dcg/basics)).
+:- use_module(library(lists)).
 
 :- [read_line].
 
@@ -28,14 +29,53 @@ three_words --> word, word, word.
 five_words --> word, word, word, word, word.
 
 id(a) --> [a].
+id(b) --> [b].
+id(c) --> [c].
+id(d) --> [d].
+id(e) --> [e].
+id(f) --> [f].
+id(g) --> [g].
+id(h) --> [h].
+id(i) --> [i].
+id(j) --> [j].
+id(k) --> [k].
+id(l) --> [l].
+id(m) --> [m].
+id(n) --> [n].
+id(o) --> [o].
+id(p) --> [p].
+id(q) --> [q].
+id(r) --> [r].
+id(s) --> [s].
+id(t) --> [t].
+id(u) --> [u].
+id(v) --> [v].
+id(w) --> [w].
+id(x) --> [x].
+id(y) --> [y].
+id(z) --> [z].
+
+dig(0) --> [0].
+dig(1) --> [1].
+dig(2) --> [2].
+dig(3) --> [3].
+dig(4) --> [4].
+dig(5) --> [5]. 
+dig(6) --> [6].
+dig(7) --> [7].
+dig(8) --> [8]. 
+dig(9) --> [9].
+
+
+
 core(16) --> [16].
 area(4) --> [4].
 dollars(1000) --> [1000].
 
 word --> [processor] | [type] | [has] | [cores] | [','] | [square] | [centimeters] | [and] | [costs] | [dollars] | ['.'] | [uses].
 
-constraint(Attr,Comp) --> attribute(Attr), imperative, [be], comparison(Comp), value.
-constraint(Attr,RangeMin,RangeMax) --> attribute(Attr), imperative, [be], interval, range(RangeMin,RangeMax).
+constraint(Attr,Comp,V) --> attribute(Attr), imperative, [be], comparison(Comp), value(V), ['.'].
+constraint(Attr,RangeMin,RangeMax) --> attribute(Attr), imperative, [be], interval, range(RangeMin,RangeMax), ['.'].
 
 attribute(Attr) --> attr_first, attr_second(Attr), attr_third.
 attr_first --> [the] | [].
@@ -54,7 +94,6 @@ comp_first(less) --> [less].
 comp_first(greater) --> [greater].
 comp_second --> [to] | [than].
 
-value --> integer. % how do i do this
 interval --> [in], [the], intv_choices, [of].
 intv_choices --> [interval] | [range].
 
