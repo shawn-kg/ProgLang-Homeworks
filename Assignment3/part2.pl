@@ -103,8 +103,8 @@ interval --> [in], [the], intv_choices, [of].
 intv_choices --> [interval] | [range].
 
 range(RangeMin,RangeMax) --> range_min(RangeMin), [to], range_max(RangeMax). % closed aka inclusive
-range_min --> integer.
-range_max --> integer.
+range_min(RangeMin) --> [RangeMin], { integer(RangeMin) }.
+range_max(RangeMax) --> [RangeMax], { integer(RangeMax) }.
 
 % constraint(Attr, Imp, X, Y) --> attribute(Attr), imperative(Imp), one_word, constr(X).	
 
