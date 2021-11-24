@@ -9,12 +9,16 @@ read_loop :-
 	length(Line, Len),
 	(
 		Len > 0,
-		write(Line), nl,
-		% definition(I,C,A,D,Line,[]),
-		% write(I), nl,
-		% write(C), nl,
-		% write(A), nl,
-		% write(D), nl,
+		% write(Line), nl,
+		((definition(I,C,A,D,Line,[]),
+		write(I), nl,
+		write(C), nl,
+		write(A), nl,
+		write(D), nl); 
+		(constraint(Attr, Comp, V, Line, []),
+		write(Attr), nl,
+		write(Comp), nl,
+		write(V), nl)),
 		read_loop;
 		Len =< 0,
 		write('Read last line.'), nl
@@ -58,19 +62,6 @@ id(x) --> [x].
 id(y) --> [y].
 id(z) --> [z].
 
-dig(0) --> [0].
-dig(1) --> [1].
-dig(2) --> [2].
-dig(3) --> [3].
-dig(4) --> [4].
-dig(5) --> [5]. 
-dig(6) --> [6].
-dig(7) --> [7].
-dig(8) --> [8]. 
-dig(9) --> [9].
-
-
-
 core(C) --> [C], {integer(C)}.
 area(A) --> [A], {integer(A)}.
 dollars(D) --> [D], {integer(D)}.
@@ -78,7 +69,7 @@ dollars(D) --> [D], {integer(D)}.
 word --> [processor] | [type] | [has] | [cores] | [','] | [square] | [centimeters] | [and] | [costs] | [dollars] | ['.'] | [uses].
 
 constraint(Attr,Comp,V) --> attribute(Attr), imperative, [be], comparison(Comp), value(V), ['.'].
-constraint(Attr,RangeMin,RangeMax) --> attribute(Attr), imperative, [be], interval, range(RangeMin,RangeMax), ['.'].
+constraint(Attr,RangeMin,RangeMax) --> attribute(Attr), imperative, [be], interval, range_min(RangeMin), [to], range_max(RangeMax), ['.'].
 
 attribute(Attr) --> attr_first, attr_second(Attr), attr_third.
 attr_first --> [the] | [].
@@ -102,7 +93,7 @@ value(V) -->  [V], { integer(V) }.
 interval --> [in], [the], intv_choices, [of].
 intv_choices --> [interval] | [range].
 
-range(RangeMin,RangeMax) --> range_min(RangeMin), [to], range_max(RangeMax). % closed aka inclusive
+% range(RangeMin,RangeMax) --> range_min(RangeMin), [to], range_max(RangeMax). % closed aka inclusive
 range_min(RangeMin) --> [RangeMin], { integer(RangeMin) }.
 range_max(RangeMax) --> [RangeMax], { integer(RangeMax) }.
 
@@ -133,16 +124,16 @@ range_max(RangeMax) --> [RangeMax], { integer(RangeMax) }.
 % comp_word(than) --> [than].
 % comp_word(to) --> [to].
 
-include(Goal, List, Included) :-
-	phrase(include_(List, Goal), Included).
+% include(Goal, List, Included) :-
+% 	phrase(include_(List, Goal), Included).
 
-include_([], _) --> [].
-include_([L|Ls], Goal) -->
-	(   { call(Goal, L) } ->
-		[L]
-	;   []
-	),
-	include_(Ls, Goal).
+% include_([], _) --> [].
+% include_([L|Ls], Goal) -->
+% 	(   { call(Goal, L) } ->
+% 		[L]
+% 	;   []
+% 	),
+% 	include_(Ls, Goal).
 
 %%%%%%%%
 
