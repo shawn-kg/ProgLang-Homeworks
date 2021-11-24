@@ -4,7 +4,7 @@
 
 :- [read_line].
 
-read_loop(ProcList) :-
+read_loop(ProcList,ConstList) :-
 	read_line(Line),
 	length(Line, Len),
 	(
@@ -12,12 +12,15 @@ read_loop(ProcList) :-
 		% write(Line), nl,
 		((definition(I,C,A,D,Line,[]),
 		append(ProcList,[[I,C,A,D]],ProcNewList),
-		write(ProcNewList), nl); 
+		append(ConstList, [], ConstNewList)); 
 		(constraint(Attr, Comp, V, Line, []),
-		write(Attr), tab(1), write(Comp), tab(1), write(V), nl)),
+		append(ConstList, [[Attr, Comp, V]], ConstNewList),
+		append(ProcList, [], ProcNewList))),
 		
-		read_loop(ProcNewList);
+		read_loop(ProcNewList, ConstNewList);
 		Len =< 0,
+		write(ProcList), nl,
+		write(ConstList), nl,
 		write('Read last line.'), nl
 	).
 
@@ -155,7 +158,7 @@ range_max(RangeMax) --> [RangeMax], { integer(RangeMax) }.
 
 
 main :-
-	read_loop([]).
+	read_loop([], []).
 
 
 
