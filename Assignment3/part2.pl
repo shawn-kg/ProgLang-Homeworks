@@ -131,7 +131,7 @@ constraints(ProcList,[[Attr, X, Y]|T],Processors) :-
 	nth0(2,B,AreaConst2),
 	nth0(2,C,AreaConst3),
 	nth0(2,D,AreaConst4),
-	multList(Processors, Areas, Areasum) %% Areasum --v goes here
+	multList(Processors, Areas, Areasum), %% Areasum --v goes here
 	((X = greater -> (Processor1*AreaConst1 + Processor2*AreaConst2 + Processor3*AreaConst3 + Processor4*AreaConst4) #> Y);
 	(X = less -> (Processor1*AreaConst1 + Processor2*AreaConst2 + Processor3*AreaConst3 + Processor4*AreaConst4) #< Y);
 	(X = equal ->  (Processor1*AreaConst1 + Processor2*AreaConst2 + Processor3*AreaConst3 + Processor4*AreaConst4) #= Y);
@@ -168,9 +168,12 @@ answers(ProcList, [Answers | Tail]):-
 	answers(ProcList, Tail).
 answers(_,[]).
 
-getValues([H|T], NewList) :-
-	nth0()
-	append(nth0(1, )
+getValues([],[],_).
+getValues([H|T], NewList, Ind) :-
+	nth0(Ind,H,X),
+	append(NewList,[X],NewList),
+	getValues(T,NewList, Ind).
+% NewList is a list of Attribute constraint constants
 	
 multList([],[],0).
 multList([H1|T1], [H2|T2], Value) :-
