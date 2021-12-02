@@ -171,8 +171,8 @@ answers(_,[]).
 getValues([],_,_).
 getValues([H|T], NewList, Ind) :-
 	nth0(Ind,H,X),
-	append(NewList,[X],NewList),
-	getValues(T,NewList, Ind).
+	append(NewList,[X],NewNewList),
+	getValues(T,NewNewList, Ind).
 % NewList is a list of Attribute constraint constants
 	
 multList([],[],0).
