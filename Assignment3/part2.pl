@@ -149,7 +149,7 @@ constraints(ProcList,[[Attr, X, Y]|T],Processors) :-
 	nth0(3,B,CostConst2),
 	nth0(3,C,CostConst3),
 	nth0(3,D,CostConst4),
-	multList(Processor, Costs, Costsum) %% Costsum --v goes here
+	multList(Processor, Costs, Costsum), %% Costsum --v goes here
 	((X = greater -> (Processor1*CostConst1 + Processor2*CostConst2 + Processor3*CostConst3 + Processor4*CostConst4) #> Y);
 	(X = less -> (Processor1*CostConst1 + Processor2*CostConst2 + Processor3*CostConst3 + Processor4*CostConst4) #< Y);
 	(X = equal -> (Processor1*CostConst1 + Processor2*CostConst2 + Processor3*CostConst3 + Processor4*CostConst4) #= Y);
@@ -168,7 +168,7 @@ answers(ProcList, [Answers | Tail]):-
 	answers(ProcList, Tail).
 answers(_,[]).
 
-getValues([],[],_).
+getValues([],_,_).
 getValues([H|T], NewList, Ind) :-
 	nth0(Ind,H,X),
 	append(NewList,[X],NewList),
