@@ -1,0 +1,5 @@
+Core count must be less than 32.
+The cost must be less than than 2149.
+Processor type z has 8 cores, uses 2 square centimeters, and costs 1 dollars.
+Processor type y has 2 cores, uses 2 square centimeters, and costs 1 dollars.
+The area must be greater than 16.
