@@ -9,16 +9,13 @@ read_loop(ProcList,ConstList) :-
 	length(Line, Len),
 	(
 		Len > 0,
-		% write(Line), nl,
 		((definition(I,C,A,D,Line,[]),
 		append(ProcList,[[I,C,A,D]],ProcNewList),
 		append(ConstList, [], ConstNewList)
-		% assert(def(I,C,A,D))
 		); 
 		(constraint(Attr, Comp, V, Line, []),
 		append(ConstList, [[Attr, Comp, V]], ConstNewList),
 		append(ProcList, [], ProcNewList)
-		% assert(const(Attr, Comp, V))
 		)),
 		
 		read_loop(ProcNewList, ConstNewList);
@@ -37,33 +34,8 @@ two_words --> word, word.
 three_words --> word, word, word.
 five_words --> word, word, word, word, word.
 
-id(a) --> [a].
-id(b) --> [b].
-id(c) --> [c].
-id(d) --> [d].
-id(e) --> [e].
-id(f) --> [f].
-id(g) --> [g].
-id(h) --> [h].
-id(i) --> [i].
-id(j) --> [j].
-id(k) --> [k].
-id(l) --> [l].
-id(m) --> [m].
-id(n) --> [n].
-id(o) --> [o].
-id(p) --> [p].
-id(q) --> [q].
-id(r) --> [r].
-id(s) --> [s].
-id(t) --> [t].
-id(u) --> [u].
-id(v) --> [v].
-id(w) --> [w].
-id(x) --> [x].
-id(y) --> [y].
-id(z) --> [z].
 
+id(I) --> [I], {string(I); is_alpha(I)}. 
 core(C) --> [C], {integer(C)}.
 area(A) --> [A], {integer(A)}.
 dollars(D) --> [D], {integer(D)}.
@@ -103,18 +75,7 @@ range_max(RangeMax) --> [RangeMax], { integer(RangeMax) }.
 constraints(_,[],_).
 constraints(ProcList,[[Attr, X, Y]|T],Processors) :-
 	length(ProcList, L), length(Processors, L), Processors ins 0..16, 
-	% Processors = [Processor1, Processor2, Processor3, Processor4],
 	((Attr=core ->
-	% nth0(0,ProcList, A),
-	% nth0(1,ProcList, B),
-	% nth0(2,ProcList, C),
-	% nth0(3,ProcList, D),
-
-	% nth0(1,A,CoreConst1),
-	% nth0(1,B,CoreConst2),
-	% nth0(1,C,CoreConst3),
-	% nth0(1,D,CoreConst4),
-	% (Processor1*CoreConst1 + Processor2*CoreConst2 + Processor3*CoreConst3 + Processor4*CoreConst4)
 	getValues(ProcList,Cores,1),
 	multList(Processors, Cores, Coresum), 
 	((X = greater -> Coresum #> Y);
