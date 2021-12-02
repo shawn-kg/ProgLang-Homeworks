@@ -23,12 +23,7 @@ read_loop(ProcList,ConstList) :-
 		
 		read_loop(ProcNewList, ConstNewList);
 		Len =< 0,
-		write(ProcList), nl, write(ConstList), nl, 
-		findall(Res, (constraints(ProcList,ConstList,Res)), label(Res), Answers),
-		% constraints(ProcList,ConstList,Answers),
-		write("finished findall"), nl,
-		write(Answers),
-		% write("reached here") , nl, 
+		findall(Res, (constraints(ProcList,ConstList,Res), label(Res)), Answers),
 		answers(ProcList,Answers)
 	).
 
@@ -103,12 +98,12 @@ intv_choices --> [interval] | [range].
 range_min(RangeMin) --> [RangeMin], { integer(RangeMin) }.
 range_max(RangeMax) --> [RangeMax], { integer(RangeMax) }.
 
-constraints(_,[],_):-
-	write('finished constraints'), nl.
+
+
+constraints(_,[],_).
 constraints(ProcList,[[Attr, X, Y]|T],Processors) :-
-	length(Processors, 4), Processors ins 0..16, Processors = [Processor1, Processor2, Processor3, Processor4],
-	write(Processors),
-	(Attr=core ->
+	length(ProcList, L), length(Processors, L), Processors ins 0..16, Processors = [Processor1, Processor2, Processor3, Processor4],
+	((Attr=core ->
 	nth0(0,ProcList, A),
 	nth0(1,ProcList, B),
 	nth0(2,ProcList, C),
@@ -118,10 +113,12 @@ constraints(ProcList,[[Attr, X, Y]|T],Processors) :-
 	nth0(1,B,CoreConst2),
 	nth0(1,C,CoreConst3),
 	nth0(1,D,CoreConst4),
+	multList(Processors, Cores, Coresum), %% Coresum--v goes here
 	((X = greater -> (Processor1*CoreConst1 + Processor2*CoreConst2 + Processor3*CoreConst3 + Processor4*CoreConst4) #> Y);
-	(X =less ->  (Processor1*CoreConst1 + Processor2*CoreConst2 + Processor3*CoreConst3 + Processor4*CoreConst4) #< Y);
+	(X = less ->  (Processor1*CoreConst1 + Processor2*CoreConst2 + Processor3*CoreConst3 + Processor4*CoreConst4) #< Y);
 	(X = equal -> (Processor1*CoreConst1 + Processor2*CoreConst2 + Processor3*CoreConst3 + Processor4*CoreConst4) #= Y);
-	(integer(X) -> (Processor1*CoreConst1 + Processor2*CoreConst2 + Processor3*CoreConst3 + Processor4*CoreConst4) ins X..Y)), 
+	(integer(X) -> (Processor1*CoreConst1 + Processor2*CoreConst2 + Processor3*CoreConst3 + Processor4*CoreConst4) #>= X, 
+	(Processor1*CoreConst1 + Processor2*CoreConst2 + Processor3*CoreConst3 + Processor4*CoreConst4) #=< Y)), 
 	constraints(ProcList,T,Processors));
 	
 	(Attr=area ->  
@@ -134,10 +131,12 @@ constraints(ProcList,[[Attr, X, Y]|T],Processors) :-
 	nth0(2,B,AreaConst2),
 	nth0(2,C,AreaConst3),
 	nth0(2,D,AreaConst4),
+	multList(Processors, Areas, Areasum) %% Areasum --v goes here
 	((X = greater -> (Processor1*AreaConst1 + Processor2*AreaConst2 + Processor3*AreaConst3 + Processor4*AreaConst4) #> Y);
 	(X = less -> (Processor1*AreaConst1 + Processor2*AreaConst2 + Processor3*AreaConst3 + Processor4*AreaConst4) #< Y);
 	(X = equal ->  (Processor1*AreaConst1 + Processor2*AreaConst2 + Processor3*AreaConst3 + Processor4*AreaConst4) #= Y);
-	(integer(X) -> (Processor1*AreaConst1 + Processor2*AreaConst2 + Processor3*AreaConst3 + Processor4*AreaConst4) ins X..Y)), 
+	(integer(X) -> (Processor1*AreaConst1 + Processor2*AreaConst2 + Processor3*AreaConst3 + Processor4*AreaConst4) #>= X, 
+	(Processor1*AreaConst1 + Processor2*AreaConst2 + Processor3*AreaConst3 + Processor4*AreaConst4) #=< Y)), 
 	constraints(ProcList,T,Processors));
 	
 	(Attr=cost ->
@@ -150,11 +149,13 @@ constraints(ProcList,[[Attr, X, Y]|T],Processors) :-
 	nth0(3,B,CostConst2),
 	nth0(3,C,CostConst3),
 	nth0(3,D,CostConst4),
+	multList(Processor, Costs, Costsum) %% Costsum --v goes here
 	((X = greater -> (Processor1*CostConst1 + Processor2*CostConst2 + Processor3*CostConst3 + Processor4*CostConst4) #> Y);
 	(X = less -> (Processor1*CostConst1 + Processor2*CostConst2 + Processor3*CostConst3 + Processor4*CostConst4) #< Y);
 	(X = equal -> (Processor1*CostConst1 + Processor2*CostConst2 + Processor3*CostConst3 + Processor4*CostConst4) #= Y);
-	(integer(X) -> (Processor1*CostConst1 + Processor2*CostConst2 + Processor3*CostConst3 + Processor4*CostConst4) ins X..Y)), 
-	constraints(ProcList,T,Processors)).
+	(integer(X) -> (Processor1*CostConst1 + Processor2*CostConst2 + Processor3*CostConst3 + Processor4*CostConst4) #>= X,
+	(Processor1*CostConst1 + Processor2*CostConst2 + Processor3*CostConst3 + Processor4*CostConst4) #=< Y)), 
+	constraints(ProcList,T,Processors))).
 
 answers(ProcList, [Answers | Tail]):-
 	nth0(0, ProcList, Proc1), nth0(1, ProcList, Proc2), nth0(2, ProcList, Proc3), nth0(3, ProcList, Proc4),
@@ -167,6 +168,15 @@ answers(ProcList, [Answers | Tail]):-
 	answers(ProcList, Tail).
 answers(_,[]).
 
+getValues([H|T], NewList) :-
+	nth0()
+	append(nth0(1, )
+	
+multList([],[],0).
+multList([H1|T1], [H2|T2], Value) :-
+	Temp is H1*H2,
+	multList(T1,T2, Rest),
+	Value is Temp + Rest.
 
 main :-
 	read_loop([], []).
