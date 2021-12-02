@@ -1,5 +1,5 @@
 siblings(Person, Sibling) :-
-	parentOf(X,Person), parentOf(Y,Sibling), (X=Y; spouse(X,Y)), Person\=Sibling.
+	parentOf(X,Person), parentOf(Y,Sibling), X=Y, Person\=Sibling.
 
 firstCousins(Person, Cousin) :-
 	parentOf(X,Person), parentOf(Y,Cousin), siblings(X,Y), Person\=Cousin.
