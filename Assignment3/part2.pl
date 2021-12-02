@@ -35,7 +35,7 @@ three_words --> word, word, word.
 five_words --> word, word, word, word, word.
 
 
-id(I) --> [I], {string(I); is_alpha(I)}. 
+id(I) --> [I], {is_alpha(I)}. 
 core(C) --> [C], {integer(C)}.
 area(A) --> [A], {integer(A)}.
 dollars(D) --> [D], {integer(D)}.
