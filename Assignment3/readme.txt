@@ -1,4 +1,4 @@
-Chrisanna Shen, Shawn George
+Chrisanna Shen (shenc6), Shawn George (georgs2)
 Part 1 actually did not take me and my partner very much time at all but part 2 took
 a good amount of time. However when we found out how to parse in integers using a DCG
 we were able to finish the parser quickly. After that we were working on the 
