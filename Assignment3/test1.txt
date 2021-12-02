@@ -2,8 +2,8 @@ Core count must be less than 32.
 The cost must be less than 2149.
 Processor type z has 8 cores, uses 2 square centimeters, and costs 1 dollars.
 Processor type y has 2 cores, uses 2 square centimeters, and costs 1 dollars.
-Processor type doja has 8 cores, uses 2 square centimeters, and costs 1 dollars.
-Processor type cat has 2 cores, uses 2 square centimeters, and costs 1 dollars.
-Processor type dj has 8 cores, uses 2 square centimeters, and costs 1 dollars.
-Processor type khalid has 2 cores, uses 2 square centimeters, and costs 1 dollars.
+Processor type d has 8 cores, uses 2 square centimeters, and costs 1 dollars.
+Processor type c has 2 cores, uses 2 square centimeters, and costs 1 dollars.
+Processor type j has 8 cores, uses 2 square centimeters, and costs 1 dollars.
+Processor type k has 2 cores, uses 2 square centimeters, and costs 1 dollars.
 The area must be equal to 0.
