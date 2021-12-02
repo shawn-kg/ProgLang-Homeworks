@@ -168,7 +168,7 @@ answers(ProcList, [Answers | Tail]):-
 	answers(ProcList, Tail).
 answers(_,[]).
 
-getValues([],[],_).
+getValues([],_,_).
 getValues([H|T], NewList, Ind) :-
 	nth0(Ind,H,X),
 	append(NewList,[X],NewList),
